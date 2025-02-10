@@ -1,6 +1,6 @@
 package ent.musa.musa.integrals;
 
-enum Status {
+public enum Status {
     IN_PROGRESS,
     COMPLETED,
     CANCELLED

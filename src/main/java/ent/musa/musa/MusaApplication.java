@@ -15,11 +15,4 @@ public class MusaApplication {
 		SpringApplication.run(MusaApplication.class, args);
 	}
 
-	@GetMapping("/home")
-	public String home(@RequestParam(value = "name", defaultValue = "World")
-			String name
-	) {
-		return String.format("%s", name);
-	}
-
 }

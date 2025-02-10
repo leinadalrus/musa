@@ -1,7 +1,7 @@
 package ent.musa.musa.data;
 
-class CustomerNotFoundException extends RuntimeException {
-    CustomerNotFoundException(Long id) {
-        super(id);
+public class CustomerNotFoundException extends RuntimeException {
+    public CustomerNotFoundException(Long id) {
+        super(String.valueOf(id));
     }
 }

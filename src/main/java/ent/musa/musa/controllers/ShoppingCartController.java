@@ -7,23 +7,25 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.mediatype.problem.Problem;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import ent.musa.musa.models.ShoppingCart;
 import ent.musa.musa.data.repository.ShoppingCartRepository;
-import ent.musa.musa.data.ShoppingCartAssembler;
+import ent.musa.musa.data.ShoppingCartNotFoundException;
+import ent.musa.musa.integrals.Status;
+import ent.musa.musa.models.ShoppingCart;
+import ent.musa.musa.models.ShoppingCartAssembler;
 
 @RestController
-class ShoppingCartController {
-    private final ShoppingCartRepository repository;
-    private final ShoppingCartAssembler assembler;
+public class ShoppingCartController {
+    final ShoppingCartRepository repository;
+    final ShoppingCartAssembler assembler;
 
-    ShoppingCartController(ShoppingCartRepository repository
+    public ShoppingCartController(ShoppingCartRepository repository,
         ShoppingCartAssembler assembler
     ) {
         this.repository = repository;
@@ -31,39 +33,39 @@ class ShoppingCartController {
     }
 
     @GetMapping("/shoppingcart")
-    CollectionModel<EntityModel<ShoppingCart>> all() {
+    public CollectionModel<EntityModel<ShoppingCart>> all() {
         List<EntityModel<ShoppingCart>> shoppingCart =
             repository.findAll().stream()
-                .map(assembler.toModel)
+                .map(assembler::toModel)
                 .collect(Collectors.toList());
 
         return CollectionModel.of(shoppingCart,
-            linkTo(methodOn(ShoppingCartController.class).all()).withSelfRel();
+            linkTo(methodOn(ShoppingCartController.class).all()).withSelfRel());
     }
 
     @GetMapping("/shoppingcart/{id}")
-    EntityModel<ShoppingCart> findOne(@PathVariable Long id) {
+    public EntityModel<ShoppingCart> findOne(@PathVariable Long id) {
         ShoppingCart shoppingCart = repository.findById(id)
-            .orElseThrow(() -> new OrderNotFoundException(id));
+            .orElseThrow(() -> new ShoppingCartNotFoundException(id));
 
         return assembler.toModel(shoppingCart);
     }
 
     @PostMapping("/shoppingcart")
-    ResponseEntity<EntityModel<ShoppingCart>> newShoppingCart(
+    public ResponseEntity<EntityModel<ShoppingCart>> newShoppingCart(
         @RequestBody ShoppingCart shoppingCart
     ) {
         shoppingCart.setStatus(Status.IN_PROGRESS);
-        ShoppingCart shoppingCart = repository.save(shoppingCart);
 
+        ShoppingCart newShoppingCart = repository.save(shoppingCart);
         return ResponseEntity
             .created(linkTo(methodOn(ShoppingCartController.class)
-                  .one(newShoppingCart.getId())).toUri())
+                  .findOne(newShoppingCart.getId())).toUri())
             .body(assembler.toModel(newShoppingCart));
     }
 
     @PutMapping("/shoppingcart/{id}/complete")
-    ResponseEntity<?> complete(@PathVariable Long id) {
+    public ResponseEntity<?> complete(@PathVariable Long id) {
         ShoppingCart shoppingCart = repository.findById(id)
             .orElseThrow(() -> new ShoppingCartNotFoundException(id));
 
@@ -77,11 +79,11 @@ class ShoppingCartController {
             .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
             .body(Problem.create()
                     .withTitle("Method not followed")
-                    .withDetail("This form is incomplete with status...\t" +  shoppingCart.getStatus());
+                    .withDetail("This form is incomplete with status...\t" +  shoppingCart.getStatus()));
     }
 
     @DeleteMapping("/shoppingcart")
-    ResponseEntity<?> cancel(@PathVariable Long id) {
+    public ResponseEntity<?> cancel(@PathVariable Long id) {
         ShoppingCart shoppingCart = repository.findById(id)
             .orElseThrow(() -> new ShoppingCartNotFoundException(id));
 

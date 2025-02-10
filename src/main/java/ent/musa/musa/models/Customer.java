@@ -12,17 +12,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-class Customer extends RepresentationModel<Customer> {
-    private @Id @GeneratedValue Long id;
-    private String username;
-    private String accountName;
+public class Customer extends RepresentationModel<Customer> {
+    @Id @GeneratedValue Long id;
+    String username;
+    String accountName;
 
     @JsonCreator
-    Customer(@JsonProperty("username") String username) {
+    public Customer(@JsonProperty("username") String username) {
         this.username = username;
     }
 
-    Customer() {}
+    public Customer() {}
 
     public Long getId() { return this.id; }
     public String getUsername() { return this.username; }
@@ -32,9 +32,7 @@ class Customer extends RepresentationModel<Customer> {
 
     public boolean equalsAs(Object object) {
         if (this == object) return true;
-        if (!(object instanceof Customer)) return false;
-
-        Customer customer = (Customer) object;
+        if (!(object instanceof Customer customer)) return false;
 
         return Objects.equals(this.id, customer.id)
             && Objects.equals(this.username, customer.username)

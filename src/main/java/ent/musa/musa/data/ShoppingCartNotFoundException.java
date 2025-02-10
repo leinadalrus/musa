@@ -1,5 +1,5 @@
 package ent.musa.musa.data;
 
-class ShoppingCartNotFoundException extends RuntimeException {
-    ShoppingCartNotFoundException(Long id) { super(id); }
+public class ShoppingCartNotFoundException extends RuntimeException {
+    public ShoppingCartNotFoundException(Long id) { super(String.valueOf(id)); }
 }
