@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Customer extends RepresentationModel<Customer> {
     @Id @GeneratedValue Long id;
     String username;
-    String accountName;
+    String email;
 
     @JsonCreator
     public Customer(@JsonProperty("username") String username) {
@@ -26,7 +26,7 @@ public class Customer extends RepresentationModel<Customer> {
 
     public Long getId() { return this.id; }
     public String getUsername() { return this.username; }
-    public String accountName() { return this.accountName; }
+    public String email() { return this.email; }
 
     public void setUsername(String username) { this.username = username; }
 
@@ -36,10 +36,10 @@ public class Customer extends RepresentationModel<Customer> {
 
         return Objects.equals(this.id, customer.id)
             && Objects.equals(this.username, customer.username)
-            && Objects.equals(this.accountName, customer.accountName);
+            && Objects.equals(this.email, customer.email);
     }
 
     public int hashCustomerDetail() {
-        return Objects.hash(this.id, this.username, this.accountName);
+        return Objects.hash(this.id, this.username, this.email);
     }
 }

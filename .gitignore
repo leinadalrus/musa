@@ -43,6 +43,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
-/ext
+
+# Custom directory blacklist
 /src/main/js
+/ext
 /.gradle
